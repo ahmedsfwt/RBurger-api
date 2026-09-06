@@ -1,0 +1,42 @@
+# Day 15 addition (Backend Parity Spec §29 - repository cleanliness for GitHub handoff).
+
+## Build outputs
+bin/
+obj/
+out/
+
+## IDE artifacts
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+
+## Local user secrets / environment overrides (never commit real config)
+appsettings.*.local.json
+appsettings.Development.json
+*.env
+.env
+
+## Local database files
+*.mdf
+*.ldf
+*.db
+
+## Test results
+TestResults/
+coverage/
+*.trx
+
+## OS artifacts
+.DS_Store
+Thumbs.db
+
+## NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
