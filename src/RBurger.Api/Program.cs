@@ -175,6 +175,17 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddEndpointsApiExplorer();
 object value = builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins(
+            "https://rb-resturant.vercel.app",
+            "https://rb-resturant-admin.vercel.app"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -189,6 +200,8 @@ app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
+
+app.UseCors("AllowFrontend");
 
 app.MapControllers();
 
