@@ -215,7 +215,7 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
     .AllowAnonymous();
 
 // §8.1: "Hub route: /hubs/orders". OrdersHub itself lives in Infrastructure (SignalR is an
-// Infrastructure concern); this is purely endpoint-routing configuration, an API-layer concern.
+// Infrastructure concern); this is purely endpoint-routing configuration, an API-Alayer concern.
 app.MapHub<OrdersHub>(OrdersHubPath);
 
 app.Run();

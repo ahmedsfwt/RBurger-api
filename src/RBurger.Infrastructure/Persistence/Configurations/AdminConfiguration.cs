@@ -34,5 +34,15 @@ public class AdminConfiguration : IEntityTypeConfiguration<Admin>
             .WithOne(d => d.CreatedByAdmin)
             .HasForeignKey(d => d.CreatedByAdminId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasData(new Admin
+        {
+            Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), 
+            Username = "admin",
+            FullName = "Super Admin",
+            PasswordHash = "AQAAAAIAAYagAAAAEERBAFafF7v9BPn4hGqNSJZR0APqsKFK2LZOfawCcBXa+gm2CaYbmm1KZYmN7NijCQ==",
+            IsActive = true,
+            CreatedAt = new DateTime(2026, 9, 10, 0, 0, 0, DateTimeKind.Utc) 
+        });
     }
 }
