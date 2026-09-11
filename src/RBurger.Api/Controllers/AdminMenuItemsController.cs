@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RBurger.Application.Admin.Menu.Commands.CreateMenuCategory;
 using RBurger.Application.Admin.Menu.Commands.CreateMenuItem;
 using RBurger.Application.Admin.Menu.Commands.DeleteMenuItem;
 using RBurger.Application.Admin.Menu.Commands.DeleteMenuItemImage;
@@ -9,6 +10,7 @@ using RBurger.Application.Admin.Menu.Commands.UpdateMenuItem;
 using RBurger.Application.Admin.Menu.Commands.UploadMenuItemImage;
 using RBurger.Application.Admin.Menu.DTOs;
 using RBurger.Application.Common.Interfaces;
+
 
 namespace RBurger.Api.Controllers;
 
@@ -39,6 +41,20 @@ public class AdminMenuItemsController : ControllerBase
     public async Task<ActionResult<MenuItemAdminResponse>> Create(
         [FromBody] CreateMenuItemCommand command,
         CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, result);
+    }
+
+    // POST /api/v1/admin/menu-items/categories
+    [HttpPost("categories")]
+    [ProducesResponseType(typeof(MenuCategoryAdminResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<MenuCategoryAdminResponse>> CreateCategory(
+    [FromBody] CreateMenuCategoryCommand command,
+    CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);
         return StatusCode(StatusCodes.Status201Created, result);

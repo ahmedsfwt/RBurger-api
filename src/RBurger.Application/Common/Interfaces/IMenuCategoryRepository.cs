@@ -18,4 +18,7 @@ public interface IMenuCategoryRepository
     // Day 15 addition (§7.3 GET /api/v1/menu?branchId= - public endpoint): categories ordered
     // by §6.2's SortOrder column, feeding the Menu tabs (§2.4).
     Task<List<MenuCategory>> GetAllOrderedAsync(CancellationToken cancellationToken);
+    Task AddAsync(MenuCategory category, CancellationToken cancellationToken);
+
+    Task SaveChangesAsync(CancellationToken cancellationToken);
 }

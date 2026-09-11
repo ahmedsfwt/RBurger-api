@@ -38,6 +38,17 @@ internal class FakeMenuCategoryRepository : IMenuCategoryRepository
     {
         return Task.FromResult(Categories.OrderBy(c => c.SortOrder).ToList());
     }
+
+    public Task AddAsync(MenuCategory category, CancellationToken cancellationToken)
+    {
+        Categories.Add(category);
+        return Task.CompletedTask;
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 }
 
 // Fakes the Day 10 scaffold-only image storage contract. Two modes: the default

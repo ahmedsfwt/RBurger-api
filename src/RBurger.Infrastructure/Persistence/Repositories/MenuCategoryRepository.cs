@@ -28,4 +28,14 @@ public class MenuCategoryRepository : IMenuCategoryRepository
     {
         return _context.MenuCategories.OrderBy(mc => mc.SortOrder).ToListAsync(cancellationToken);
     }
+    public Task AddAsync(MenuCategory category, CancellationToken cancellationToken)
+    {
+        _context.MenuCategories.Add(category);
+        return Task.CompletedTask;
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return _context.SaveChangesAsync(cancellationToken);
+    }
 }
