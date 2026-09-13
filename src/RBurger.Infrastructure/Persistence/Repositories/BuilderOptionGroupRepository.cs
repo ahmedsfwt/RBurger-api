@@ -20,4 +20,15 @@ public class BuilderOptionGroupRepository : IBuilderOptionGroupRepository
             .Include(g => g.Options)
             .ToListAsync(cancellationToken);
     }
+
+    public Task AddAsync(BuilderOptionGroup group, CancellationToken cancellationToken)
+    {
+        _context.BuilderOptionGroups.Add(group);
+        return Task.CompletedTask;
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return _context.SaveChangesAsync(cancellationToken);
+    }
 }

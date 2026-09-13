@@ -12,4 +12,15 @@ internal class FakeBuilderOptionGroupRepository : IBuilderOptionGroupRepository
     {
         return Task.FromResult(Groups.ToList());
     }
+
+    public Task AddAsync(BuilderOptionGroup group, CancellationToken cancellationToken)
+    {
+        Groups.Add(group); 
+        return Task.CompletedTask;
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 }

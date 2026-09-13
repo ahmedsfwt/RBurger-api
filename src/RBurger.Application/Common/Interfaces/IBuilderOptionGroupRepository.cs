@@ -11,4 +11,8 @@ public interface IBuilderOptionGroupRepository
     // All groups with their options loaded - the full documented response shape in one call
     // (§7.3's example lists every group/option together, no pagination documented).
     Task<List<BuilderOptionGroup>> GetAllWithOptionsAsync(CancellationToken cancellationToken);
+
+    Task AddAsync(BuilderOptionGroup group, CancellationToken cancellationToken);
+
+    Task SaveChangesAsync(CancellationToken cancellationToken);
 }
