@@ -15,4 +15,12 @@ public interface IBuilderOptionGroupRepository
     Task AddAsync(BuilderOptionGroup group, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
+
+    Task<BuilderOptionGroup?> GetByIdWithOptionsAsync(int id, CancellationToken cancellationToken);
+
+
+    void Update(BuilderOptionGroup group);
+
+    void Delete(BuilderOptionGroup group);
+    Task RemoveOptionsAsync(ICollection<BuilderOption> options, CancellationToken cancellationToken);
 }

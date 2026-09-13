@@ -31,4 +31,27 @@ public class BuilderOptionGroupRepository : IBuilderOptionGroupRepository
     {
         return _context.SaveChangesAsync(cancellationToken);
     }
+
+    public Task<BuilderOptionGroup?> GetByIdWithOptionsAsync(int id, CancellationToken cancellationToken)
+    {
+        return _context.BuilderOptionGroups
+            .Include(g => g.Options)
+            .FirstOrDefaultAsync(g => g.Id == id, cancellationToken);
+    }
+
+    public void Update(BuilderOptionGroup group)
+    {
+        _context.BuilderOptionGroups.Update(group);
+    }
+
+    public void Delete(BuilderOptionGroup group)
+    {
+        _context.BuilderOptionGroups.Remove(group);
+    }
+
+    public Task RemoveOptionsAsync(ICollection<BuilderOption> options, CancellationToken cancellationToken)
+    {
+        _context.BuilderOptions.RemoveRange(options);
+        return Task.CompletedTask;
+    }
 }

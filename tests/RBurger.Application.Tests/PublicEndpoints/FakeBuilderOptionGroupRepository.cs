@@ -23,4 +23,22 @@ internal class FakeBuilderOptionGroupRepository : IBuilderOptionGroupRepository
     {
         return Task.CompletedTask;
     }
+
+    public Task<BuilderOptionGroup?> GetByIdWithOptionsAsync(int id, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(Groups.FirstOrDefault(g => g.Id == id));
+    }
+
+    public void Update(BuilderOptionGroup group) { } 
+
+    public void Delete(BuilderOptionGroup group)
+    {
+        Groups.Remove(group);
+    }
+
+    public Task RemoveOptionsAsync(ICollection<BuilderOption> options, CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask; 
+    }
+
 }
