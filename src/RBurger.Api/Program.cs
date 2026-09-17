@@ -180,7 +180,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
         policy.WithOrigins(
             "https://rb-resturant.vercel.app",
-            "https://rb-resturant-admin.vercel.app"
+            "https://rb-resturant-admin.vercel.app",
+            "http://localhost:5173"
         )
         .AllowAnyMethod()
         .AllowAnyHeader());
