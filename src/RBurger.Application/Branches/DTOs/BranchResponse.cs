@@ -10,6 +10,7 @@ public class BranchResponse
     public decimal DeliveryFee { get; set; }
     public int EtaMinMinutes { get; set; }
     public int EtaMaxMinutes { get; set; }
+    public string HotlinePhones { get; set; } = string.Empty;
 
     // Day 15 (Backend Parity §2.4/Day 14): the branch-configured ETA text, additive - the two
     // documented fields above (etaMinMinutes/etaMaxMinutes) are unchanged. This endpoint has no

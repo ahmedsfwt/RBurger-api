@@ -115,9 +115,10 @@ public class OrderRepository : IOrderRepository
     public Task<List<Order>> GetActiveOrdersForDriverAsync(Guid driverId, CancellationToken cancellationToken)
     {
         return _context.Orders
-            .Where(o => o.DriverId == driverId
-                && (o.Stage == OrderStage.Preparing || o.Stage == OrderStage.OnTheWay))
-            .ToListAsync(cancellationToken);
+        .Include(o => o.Customer)
+        .Where(o => o.DriverId == driverId
+            && (o.Stage == OrderStage.Preparing || o.Stage == OrderStage.OnTheWay))
+        .ToListAsync(cancellationToken);
     }
 
     // §7.5: "completed by them today". Order has no persisted DeliveredAt scalar column
@@ -135,6 +136,7 @@ public class OrderRepository : IOrderRepository
             .ToListAsync(cancellationToken);
 
         return await _context.Orders
+            .Include(o => o.Customer)
             .Where(o => o.DriverId == driverId
                 && o.Stage == OrderStage.Delivered
                 && deliveredTodayOrderIds.Contains(o.Id))

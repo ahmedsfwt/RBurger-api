@@ -35,6 +35,17 @@ public class UpdateDriverCommandHandler : IRequestHandler<UpdateDriverCommand, D
             driver.FullName = request.FullName;
         }
 
+        if (request.Phone is not null)
+        {
+            var existingDriver = await _driverRepository.GetByPhoneAsync(request.Phone, cancellationToken);
+            if (existingDriver is not null && existingDriver.Id != driver.Id)
+            {
+                throw new ConflictException("A driver with this phone number already exists.", "DUPLICATE_PHONE");
+            }
+
+            driver.Phone = request.Phone;
+        }
+
         if (request.Vehicle is not null)
         {
             driver.Vehicle = request.Vehicle;

@@ -38,7 +38,7 @@ public class CustomerReceivedCommandHandlerTests
     public async Task Should_set_CustomerReceivedAt_when_order_is_owned_and_delivered()
     {
         var ownerId = Guid.NewGuid();
-        var order = BuildOrder(ownerId, OrderStage.Delivered);
+        var order = BuildOrder(ownerId, OrderStage.AwaitingCustomerConfirmation);
         var repository = new FakeOrderRepository();
         repository.AddedOrders.Add(order);
         var handler = BuildHandler(repository);
@@ -73,7 +73,7 @@ public class CustomerReceivedCommandHandlerTests
     {
         var ownerId = Guid.NewGuid();
         var otherCustomerId = Guid.NewGuid();
-        var order = BuildOrder(ownerId, OrderStage.Delivered);
+        var order = BuildOrder(ownerId, OrderStage.AwaitingCustomerConfirmation);
         var repository = new FakeOrderRepository();
         repository.AddedOrders.Add(order);
         var handler = BuildHandler(repository);
@@ -87,6 +87,7 @@ public class CustomerReceivedCommandHandlerTests
     [InlineData(OrderStage.Confirmed)]
     [InlineData(OrderStage.Preparing)]
     [InlineData(OrderStage.OnTheWay)]
+    [InlineData(OrderStage.Delivered)]
     public async Task Should_throw_UnprocessableEntityException_when_stage_is_not_delivered(OrderStage stage)
     {
         var ownerId = Guid.NewGuid();
@@ -105,7 +106,7 @@ public class CustomerReceivedCommandHandlerTests
     {
         var ownerId = Guid.NewGuid();
         var alreadySetAt = DateTime.UtcNow.AddMinutes(-5);
-        var order = BuildOrder(ownerId, OrderStage.Delivered, alreadySetAt);
+        var order = BuildOrder(ownerId, OrderStage.AwaitingCustomerConfirmation, alreadySetAt);
         var repository = new FakeOrderRepository();
         repository.AddedOrders.Add(order);
         var handler = BuildHandler(repository);
@@ -122,7 +123,7 @@ public class CustomerReceivedCommandHandlerTests
     public async Task Should_not_create_any_OrderStatusEvent_on_success()
     {
         var ownerId = Guid.NewGuid();
-        var order = BuildOrder(ownerId, OrderStage.Delivered);
+        var order = BuildOrder(ownerId, OrderStage.AwaitingCustomerConfirmation);
         var repository = new FakeOrderRepository();
         repository.AddedOrders.Add(order);
         var handler = BuildHandler(repository);
@@ -131,11 +132,10 @@ public class CustomerReceivedCommandHandlerTests
             new CustomerReceivedCommand { OrderId = order.Id, CustomerId = ownerId },
             CancellationToken.None);
 
-        // §7.4's prose does not request an OrderStatusEvent for this endpoint, and Stage
-        // does not change - approved Day 5 decision, unchanged by Day 8. See Phase 0 report
-        // §3.D. Persisted audit-trail semantics stay separate from the realtime broadcast
-        // added below by Day 8 approved decision #3.
-        Assert.Empty(order.OrderStatusEvents);
+        // Updated: the handler now advances Stage to Delivered and records an
+        // OrderStatusEvent, so the completed-deliveries list can pick it up.
+        Assert.Single(order.OrderStatusEvents);
+        Assert.Equal(OrderStage.Delivered, order.OrderStatusEvents.Single().Stage);
     }
 
     // ---- Day 8 approved decision #3 ----
@@ -144,7 +144,7 @@ public class CustomerReceivedCommandHandlerTests
     public async Task Should_broadcast_OrderStatusChanged_after_a_successful_customer_received()
     {
         var ownerId = Guid.NewGuid();
-        var order = BuildOrder(ownerId, OrderStage.Delivered);
+        var order = BuildOrder(ownerId, OrderStage.AwaitingCustomerConfirmation);
         var repository = new FakeOrderRepository();
         repository.AddedOrders.Add(order);
         var realtimeNotifier = new FakeOrderRealtimeNotifier();
@@ -156,7 +156,7 @@ public class CustomerReceivedCommandHandlerTests
 
         var call = Assert.Single(realtimeNotifier.StatusChangedCalls);
         Assert.Equal(order.Id, call.OrderId);
-        // §7.4/§6.3: Stage does not change - still Delivered=3.
+        // Stage advances to Delivered as part of this call.
         Assert.Equal(OrderStage.Delivered, call.Stage);
         Assert.Equal(result.CustomerReceivedAt, call.Timestamp);
         Assert.Equal("customer", call.TriggeredBy);
@@ -166,6 +166,7 @@ public class CustomerReceivedCommandHandlerTests
     [InlineData(OrderStage.Confirmed)]
     [InlineData(OrderStage.Preparing)]
     [InlineData(OrderStage.OnTheWay)]
+    [InlineData(OrderStage.Delivered)]
     public async Task Should_not_broadcast_when_stage_precondition_fails(OrderStage stage)
     {
         var ownerId = Guid.NewGuid();
@@ -188,7 +189,7 @@ public class CustomerReceivedCommandHandlerTests
     {
         var ownerId = Guid.NewGuid();
         var alreadySetAt = DateTime.UtcNow.AddMinutes(-5);
-        var order = BuildOrder(ownerId, OrderStage.Delivered, alreadySetAt);
+        var order = BuildOrder(ownerId, OrderStage.AwaitingCustomerConfirmation, alreadySetAt);
         var repository = new FakeOrderRepository();
         repository.AddedOrders.Add(order);
         var realtimeNotifier = new FakeOrderRealtimeNotifier();

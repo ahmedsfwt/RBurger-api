@@ -2,6 +2,7 @@ using MediatR;
 using RBurger.Application.Common.Exceptions;
 using RBurger.Application.Common.Interfaces;
 using RBurger.Application.Orders.DTOs;
+using RBurger.Domain.Entities;
 using RBurger.Domain.Enums;
 
 namespace RBurger.Application.Orders.Commands.CustomerReceived;
@@ -38,10 +39,10 @@ public class CustomerReceivedCommandHandler : IRequestHandler<CustomerReceivedCo
         // §7.4 header row + §6.3: "CustomerReceivedAt can only be set once Stage = 3."
         // Undocumented status code for this specific case (flagged in Phase 0 report) -
         // 422/UnprocessableEntityException is an implementation decision, approved for Day 5.
-        if (order.Stage != OrderStage.Delivered)
+        if (order.Stage != OrderStage.AwaitingCustomerConfirmation)
         {
             throw new UnprocessableEntityException(
-                "The order must reach Stage 3 (Delivered) before it can be marked as received.",
+                "The order must reach Stage 3 (Awaiting Customer Confirmation) before it can be marked as received.",
                 "ORDER_NOT_DELIVERED");
         }
 
@@ -58,9 +59,18 @@ public class CustomerReceivedCommandHandler : IRequestHandler<CustomerReceivedCo
         // UTC"), not a DB default - §6.2 documents no default for this nullable column, unlike
         // CreatedAt's GETUTCDATE().
         order.CustomerReceivedAt = DateTime.UtcNow;
+        order.Stage = OrderStage.Delivered;
 
-        // Approved Day 5 decision (unchanged by Day 8): no OrderStatusEvent row - Stage does
-        // not change here, it stays at 3 (Delivered).
+        var statusEvent = new OrderStatusEvent
+        {
+            OrderId = order.Id,
+            Stage = order.Stage,
+            TriggeredBy = "customer",
+            ActorId = request.CustomerId
+        };
+        await _orderRepository.AddOrderStatusEventAsync(statusEvent, cancellationToken);
+
+        
         await _orderRepository.SaveChangesAsync(cancellationToken);
 
         // Day 8 approved decision #3: §7.4 states this endpoint "Fires OrderStatusChanged

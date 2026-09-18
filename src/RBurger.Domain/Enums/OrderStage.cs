@@ -6,5 +6,6 @@ public enum OrderStage
     Confirmed = 0,
     Preparing = 1,
     OnTheWay = 2,
-    Delivered = 3
+    AwaitingCustomerConfirmation = 3,
+    Delivered = 4
 }

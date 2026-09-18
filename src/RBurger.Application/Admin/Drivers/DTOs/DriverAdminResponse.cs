@@ -36,4 +36,5 @@ public class DriverListItemDto
     public string Vehicle { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public int DeliveriesCompleted { get; set; }
+    public string Phone { get; set; } = string.Empty;
 }

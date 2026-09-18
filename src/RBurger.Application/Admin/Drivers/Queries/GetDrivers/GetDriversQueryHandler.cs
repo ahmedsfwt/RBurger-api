@@ -36,6 +36,7 @@ public class GetDriversQueryHandler : IRequestHandler<GetDriversQuery, PagedResp
         {
             DriverId = d.Id,
             FullName = d.FullName,
+            Phone = d.Phone,
             BranchId = d.BranchId,
             Vehicle = d.Vehicle,
             IsActive = d.IsActive,

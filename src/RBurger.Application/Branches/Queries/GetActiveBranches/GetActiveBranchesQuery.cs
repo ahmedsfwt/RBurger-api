@@ -30,7 +30,8 @@ public class GetActiveBranchesQueryHandler : IRequestHandler<GetActiveBranchesQu
             DeliveryFee = b.DeliveryFee,
             EtaMinMinutes = b.EtaMinMinutes,
             EtaMaxMinutes = b.EtaMaxMinutes,
-            EstimatedDeliveryTime = b.EstimatedDeliveryTime
+            EstimatedDeliveryTime = b.EstimatedDeliveryTime,
+            HotlinePhones = b.HotlinePhones
         }).ToList();
     }
 }

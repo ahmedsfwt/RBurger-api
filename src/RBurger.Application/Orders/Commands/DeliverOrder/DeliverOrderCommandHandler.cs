@@ -47,7 +47,7 @@ public class DeliverOrderCommandHandler : IRequestHandler<DeliverOrderCommand, D
                 "INVALID_ORDER_STAGE");
         }
 
-        order.Stage = OrderStage.Delivered;
+        order.Stage = OrderStage.AwaitingCustomerConfirmation;
 
         // §9.1: "Cash on Delivery ... pending -> captured, auto-set by the
         // /driver/orders/{id}/deliver endpoint the moment the driver confirms delivery."

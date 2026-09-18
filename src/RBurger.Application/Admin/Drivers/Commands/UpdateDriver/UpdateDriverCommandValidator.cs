@@ -18,5 +18,7 @@ public class UpdateDriverCommandValidator : AbstractValidator<UpdateDriverComman
         // Mirrors CreateDriverCommandValidator: no invented complexity rules, only non-empty
         // when a password change is actually requested.
         RuleFor(x => x.Password).NotEmpty().When(x => x.Password is not null);
+
+        RuleFor(x => x.Phone).MaximumLength(20).When(x => x.Phone is not null);
     }
 }

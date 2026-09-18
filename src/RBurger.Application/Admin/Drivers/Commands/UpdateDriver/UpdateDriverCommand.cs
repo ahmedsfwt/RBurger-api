@@ -13,6 +13,7 @@ public class UpdateDriverCommand : IRequest<DriverAdminResponse>
 {
     public Guid Id { get; set; }
     public string? FullName { get; set; }
+    public string? Phone { get; set; }
     public string? Vehicle { get; set; }
     public int? BranchId { get; set; }
     public string? Password { get; set; }

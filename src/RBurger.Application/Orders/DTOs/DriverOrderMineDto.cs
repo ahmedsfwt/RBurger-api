@@ -12,4 +12,5 @@ public class DriverOrderMineDto
     public OrderStage Stage { get; set; }
     public string CustomerAddress { get; set; } = string.Empty;
     public decimal Total { get; set; }
+    public string? CustomerPhone { get; set; }
 }

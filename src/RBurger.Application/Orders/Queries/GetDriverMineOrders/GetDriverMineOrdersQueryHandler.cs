@@ -30,6 +30,7 @@ public class GetDriverMineOrdersQueryHandler
             OrderNumber = o.OrderNumber,
             Stage = o.Stage,
             CustomerAddress = o.Address,
+            CustomerPhone = o.Customer?.Phone,
             Total = o.Total
         }).ToList();
     }

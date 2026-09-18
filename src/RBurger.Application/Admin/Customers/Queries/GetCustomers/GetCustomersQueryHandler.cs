@@ -35,6 +35,7 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Paged
             CustomerId = c.Id,
             FullName = c.FullName,
             Phone = c.Phone,
+            Address = c.DefaultAddress,
             OrdersCount = orderCounts.GetValueOrDefault(c.Id, 0)
         }).ToList();
 
