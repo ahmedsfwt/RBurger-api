@@ -49,6 +49,10 @@ public class UpdateBranchCommandHandler : IRequestHandler<UpdateBranchCommand, B
             branch.IsActive = request.IsActive.Value;
         }
 
+        if (request.HotlinePhones is not null)
+        {
+            branch.HotlinePhones = request.HotlinePhones;
+        }
         // Day 14 addition (Backend Parity Spec §1.4).
         if (request.EstimatedDeliveryTime is not null)
         {
@@ -66,6 +70,7 @@ public class UpdateBranchCommandHandler : IRequestHandler<UpdateBranchCommand, B
             EtaMinMinutes = branch.EtaMinMinutes,
             EtaMaxMinutes = branch.EtaMaxMinutes,
             IsActive = branch.IsActive,
+            HotlinePhones = branch.HotlinePhones,
             EstimatedDeliveryTime = branch.EstimatedDeliveryTime
         };
     }

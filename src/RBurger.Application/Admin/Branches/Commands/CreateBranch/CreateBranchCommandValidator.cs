@@ -22,5 +22,6 @@ public class CreateBranchCommandValidator : AbstractValidator<CreateBranchComman
             .Must(x => x.EtaMinMinutes <= x.EtaMaxMinutes)
             .WithMessage("EtaMinMinutes must be less than or equal to EtaMaxMinutes.")
             .WithName("EtaMinMinutes");
+        RuleFor(x => x.HotlinePhones).MaximumLength(200);
     }
 }

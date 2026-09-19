@@ -25,4 +25,5 @@ public class CreateBranchCommand : IRequest<BranchAdminResponse>
     // request body, optional (nullable), mirrors HotlinePhones' precedent above for a plain,
     // non-FK column added outside the original documented contract.
     public string? EstimatedDeliveryTime { get; set; }
+    public string? HotlinePhones { get; set; }
 }

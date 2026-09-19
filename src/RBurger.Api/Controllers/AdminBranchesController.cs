@@ -6,6 +6,7 @@ using RBurger.Application.Admin.Branches.Commands.DeleteBranch;
 using RBurger.Application.Admin.Branches.Commands.ToggleBranchStatus;
 using RBurger.Application.Admin.Branches.Commands.UpdateBranch;
 using RBurger.Application.Admin.Branches.DTOs;
+using RBurger.Application.Admin.Branches.Queries.GetAdminBranches;
 
 namespace RBurger.Api.Controllers;
 
@@ -20,6 +21,16 @@ public class AdminBranchesController : ControllerBase
     public AdminBranchesController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(List<BranchAdminResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<List<BranchAdminResponse>>> GetAll(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetAdminBranchesQuery(), cancellationToken);
+        return Ok(result);
     }
 
     // §7.6.2 POST /api/v1/admin/branches - Admin JWT. §7.8: 201 Created.

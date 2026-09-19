@@ -17,6 +17,7 @@ public class BranchAdminResponse
 
     // Day 14 addition (Backend Parity Spec §1.4).
     public string? EstimatedDeliveryTime { get; set; }
+    public string HotlinePhones { get; set; } = string.Empty;
 }
 
 // Day 14 addition (Backend Parity Spec §2.1) - narrow response for the new

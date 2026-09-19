@@ -11,5 +11,6 @@ public class UpdateBranchCommandValidator : AbstractValidator<UpdateBranchComman
         RuleFor(x => x.EtaMinMinutes).GreaterThan(0).When(x => x.EtaMinMinutes is not null);
         RuleFor(x => x.EtaMaxMinutes).GreaterThan(0).When(x => x.EtaMaxMinutes is not null);
         RuleFor(x => x.EstimatedDeliveryTime).MaximumLength(50);
+        RuleFor(x => x.HotlinePhones).MaximumLength(200).When(x => x.HotlinePhones is not null);
     }
 }

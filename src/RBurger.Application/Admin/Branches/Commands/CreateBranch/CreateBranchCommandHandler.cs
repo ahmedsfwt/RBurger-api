@@ -23,7 +23,7 @@ public class CreateBranchCommandHandler : IRequestHandler<CreateBranchCommand, B
             DeliveryFee = request.DeliveryFee,
             EtaMinMinutes = request.EtaMinMinutes,
             EtaMaxMinutes = request.EtaMaxMinutes,
-            HotlinePhones = string.Empty, // see CreateBranchCommand's XML comment
+            HotlinePhones = request.HotlinePhones ?? string.Empty,
             IsActive = true, // §6.2: "bit | default 1"
             EstimatedDeliveryTime = request.EstimatedDeliveryTime // Day 14 (Backend Parity Spec §1.4)
         };
@@ -40,6 +40,7 @@ public class CreateBranchCommandHandler : IRequestHandler<CreateBranchCommand, B
             EtaMinMinutes = branch.EtaMinMinutes,
             EtaMaxMinutes = branch.EtaMaxMinutes,
             IsActive = branch.IsActive,
+            HotlinePhones = branch.HotlinePhones,
             EstimatedDeliveryTime = branch.EstimatedDeliveryTime
         };
     }
