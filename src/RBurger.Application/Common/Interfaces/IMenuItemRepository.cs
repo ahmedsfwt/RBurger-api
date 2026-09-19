@@ -30,4 +30,6 @@ public interface IMenuItemRepository
     // following the same explicit Add/SaveChanges split already established by
     // ICustomerRepository (Day 3) and IReviewRepository (Day 5).
     Task SaveChangesAsync(CancellationToken cancellationToken);
+
+    Task<List<MenuItem>> GetAllAsync(CancellationToken cancellationToken);
 }

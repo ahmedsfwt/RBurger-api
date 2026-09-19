@@ -13,6 +13,12 @@ public class MenuItemRepository : IMenuItemRepository
         _context = context;
     }
 
+    public Task<List<MenuItem>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return _context.MenuItems
+            .Include(mi => mi.Category)
+            .ToListAsync(cancellationToken);
+    }
     public Task<List<MenuItem>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken)
     {
         return _context.MenuItems

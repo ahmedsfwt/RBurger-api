@@ -10,6 +10,7 @@ using RBurger.Application.Admin.Menu.Commands.UpdateMenuItem;
 using RBurger.Application.Admin.Menu.Commands.UploadMenuItemImage;
 using RBurger.Application.Admin.Menu.DTOs;
 using RBurger.Application.Common.Interfaces;
+using RBurger.Application.Admin.Menu.Queries.GetMenuItemsAdmin;
 
 
 namespace RBurger.Api.Controllers;
@@ -29,6 +30,17 @@ public class AdminMenuItemsController : ControllerBase
     {
         _mediator = mediator;
         _currentUserService = currentUserService;
+    }
+
+    // GET /api/v1/admin/menu-items - Admin JWT. Returns every menu item (available or not).
+    [HttpGet]
+    [ProducesResponseType(typeof(List<MenuItemAdminResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<List<MenuItemAdminResponse>>> GetAll(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new GetMenuItemsAdminQuery(), cancellationToken);
+        return Ok(result);
     }
 
     // §7.6.1 POST /api/v1/admin/menu-items - Admin JWT. §7.8: 201 Created.

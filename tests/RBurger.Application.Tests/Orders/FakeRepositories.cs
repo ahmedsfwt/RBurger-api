@@ -459,6 +459,11 @@ internal class FakeMenuItemRepository : IMenuItemRepository
         return Task.FromResult(MenuItems.FirstOrDefault(mi => mi.Id == id));
     }
 
+    public Task<List<MenuItem>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(MenuItems.ToList());
+    }
+
     public Task AddAsync(MenuItem menuItem, CancellationToken cancellationToken)
     {
         if (menuItem.Id == 0)
