@@ -117,7 +117,9 @@ public class OrderRepository : IOrderRepository
         return _context.Orders
         .Include(o => o.Customer)
         .Where(o => o.DriverId == driverId
-            && (o.Stage == OrderStage.Preparing || o.Stage == OrderStage.OnTheWay))
+              && (o.Stage == OrderStage.Preparing
+              || o.Stage == OrderStage.OnTheWay
+              || o.Stage == OrderStage.AwaitingCustomerConfirmation))
         .ToListAsync(cancellationToken);
     }
 
