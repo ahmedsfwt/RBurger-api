@@ -181,7 +181,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
             "https://rb-resturant.vercel.app",
             "https://rb-resturant-admin.vercel.app",
-            "http://localhost:5173"
+            "http://localhost:5173",
+            "http://localhost:5174"
         )
         .AllowAnyMethod()
         .AllowAnyHeader());
