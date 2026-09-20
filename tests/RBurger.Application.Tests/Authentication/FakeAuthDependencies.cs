@@ -144,6 +144,16 @@ internal class FakeAdminRepository : IAdminRepository
     {
         return Task.FromResult(Admins.FirstOrDefault(a => a.Id == id));
     }
+    public Task AddAsync(AdminEntity admin, CancellationToken cancellationToken)
+    {
+        Admins.Add(admin);
+        return Task.CompletedTask;
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 }
 
 // Fakes password verification with a plain equality check against a "hashed:" prefix, so tests

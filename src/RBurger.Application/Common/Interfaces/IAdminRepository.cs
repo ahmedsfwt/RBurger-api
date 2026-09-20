@@ -23,4 +23,6 @@ public interface IAdminRepository
     // ICustomerRepository/IDriverRepository's existing GetByIdAsync already enables for the
     // Customer/Driver branches of that same flow.
     Task<AdminEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task AddAsync(AdminEntity admin, CancellationToken cancellationToken);
+    Task SaveChangesAsync(CancellationToken cancellationToken);
 }

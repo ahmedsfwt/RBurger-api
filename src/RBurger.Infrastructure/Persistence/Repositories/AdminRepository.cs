@@ -22,4 +22,14 @@ public class AdminRepository : IAdminRepository
     {
         return _context.Admins.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
+    public Task AddAsync(Admin admin, CancellationToken cancellationToken)
+    {
+        _context.Admins.Add(admin);
+        return Task.CompletedTask;
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return _context.SaveChangesAsync(cancellationToken);
+    }
 }
