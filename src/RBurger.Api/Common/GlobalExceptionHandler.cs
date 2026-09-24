@@ -103,6 +103,17 @@ public class GlobalExceptionHandler : IExceptionHandler
                 "IMAGE_STORAGE_NOT_CONFIGURED",
                 null),
 
+            InvalidWebhookSignatureException => (
+                StatusCodes.Status400BadRequest,
+                "Invalid webhook signature.",
+                "INVALID_WEBHOOK_SIGNATURE",
+                null),
+
+            PaymentGatewayException => (
+                StatusCodes.Status502BadGateway,
+                "The payment gateway request failed.",
+                "PAYMENT_GATEWAY_ERROR",
+                null),
             // Day 12 addition (Blocking Issue #3, same scaffold-only pattern as
             // StorageNotConfiguredException above - approved). Honest "feature not yet
             // deployed" signal for POST /payments/{orderId}/charge, POST /payments/webhook,

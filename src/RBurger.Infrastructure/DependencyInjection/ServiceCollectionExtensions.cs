@@ -8,6 +8,7 @@ using RBurger.Infrastructure.Persistence;
 using RBurger.Infrastructure.Persistence.Repositories;
 using RBurger.Infrastructure.Realtime;
 using RBurger.Infrastructure.Storage;
+using RBurger.Infrastructure.Payments;
 
 namespace RBurger.Infrastructure.DependencyInjection;
 
@@ -75,7 +76,19 @@ public static class ServiceCollectionExtensions
         // Day 12 addition (Blocking Issue #3, same scaffold-only approach as the image storage
         // registration above - approved). No Paymob/Fawry credentials are specified in
         // Documentation v1.2, so this always throws PaymentProviderNotConfiguredException.
-        services.AddScoped<IPaymentProvider, NotConfiguredPaymentProvider>();
+        services.Configure<PaymobSettings>(options =>
+        {
+            var section = configuration.GetSection(PaymobSettings.SectionName);
+            options.BaseUrl = section["BaseUrl"] ?? options.BaseUrl;
+            options.SecretKey = section["SecretKey"] ?? string.Empty;
+            options.HmacSecret = section["HmacSecret"] ?? string.Empty;
+            options.NotificationUrl = section["NotificationUrl"] ?? string.Empty;
+            if (int.TryParse(section["IntegrationId"], out var integrationId))
+            {
+                options.IntegrationId = integrationId;
+            }
+        });
+        services.AddHttpClient<IPaymentProvider, PaymobPaymentProvider>();
 
         // Day 7 addition (§8): real-time order-status broadcasting.
         services.AddSignalR();

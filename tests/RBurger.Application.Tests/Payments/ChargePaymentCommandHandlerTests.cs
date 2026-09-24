@@ -91,4 +91,55 @@ public class ChargePaymentCommandHandlerTests
         Assert.False(string.IsNullOrEmpty(result.RedirectUrl));
         Assert.Single(provider.ChargeCalls);
     }
+    [Fact]
+    public async Task Handle_throws_UnprocessableEntityException_when_payment_already_captured()
+    {
+        var customerId = Guid.NewGuid();
+        var orders = new FakeOrderRepository();
+        var order = Order(customerId);
+        order.Payment!.Status = "captured";
+        orders.AddedOrders.Add(order);
+        var provider = new FakePaymentProvider { AlwaysThrow = false };
+        var handler = new ChargePaymentCommandHandler(orders, provider);
+
+        await Assert.ThrowsAsync<UnprocessableEntityException>(() =>
+            handler.Handle(new ChargePaymentCommand(order.Id, customerId, "key-1"), default));
+
+        Assert.Empty(provider.ChargeCalls);
+    }
+
+    [Fact]
+    public async Task Handle_throws_UnprocessableEntityException_when_order_cancelled()
+    {
+        var customerId = Guid.NewGuid();
+        var orders = new FakeOrderRepository();
+        var order = Order(customerId);
+        order.IsCancelled = true;
+        orders.AddedOrders.Add(order);
+        var provider = new FakePaymentProvider { AlwaysThrow = false };
+        var handler = new ChargePaymentCommandHandler(orders, provider);
+
+        await Assert.ThrowsAsync<UnprocessableEntityException>(() =>
+            handler.Handle(new ChargePaymentCommand(order.Id, customerId, "key-1"), default));
+
+        Assert.Empty(provider.ChargeCalls);
+    }
+
+    [Fact]
+    public async Task Handle_allows_retry_after_failed_and_returns_client_secret()
+    {
+        var customerId = Guid.NewGuid();
+        var orders = new FakeOrderRepository();
+        var order = Order(customerId);
+        order.Payment!.Status = "failed";
+        orders.AddedOrders.Add(order);
+        var provider = new FakePaymentProvider { AlwaysThrow = false };
+        var handler = new ChargePaymentCommandHandler(orders, provider);
+
+        var result = await handler.Handle(new ChargePaymentCommand(order.Id, customerId, "key-2"), default);
+
+        Assert.Equal("fake-client-secret", result.ClientSecret);
+        Assert.Equal("paymob", order.Payment.GatewayProvider);
+        Assert.Single(provider.ChargeCalls);
+    }
 }

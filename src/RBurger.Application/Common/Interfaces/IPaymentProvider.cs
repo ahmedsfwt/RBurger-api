@@ -25,7 +25,7 @@ public interface IPaymentProvider
 // here corresponds to the response's "paymentId" (the Payments.Id already assigned when the
 // order/payment row was created, per CreateOrderCommandHandler - not a new gateway-side id,
 // since §9.3's sequence never mentions the gateway minting one before redirect).
-public record PaymentSession(string SessionId, string RedirectUrl);
+public record PaymentSession(string SessionId, string RedirectUrl, string ClientSecret = "");
 
 // No documented JSON response exists for §9.4's refund flow (prose-only description) - kept
 // to the minimum an honest scaffold implementation needs to report failure vs success.

@@ -5,8 +5,8 @@ using RBurger.Application.Payments.DTOs;
 
 namespace RBurger.Application.Payments.Commands.ChargePayment;
 
-// §7.7/§9.3: "For paymentMethod=card only: creates a hosted-payment-page session with the
-// gateway (§9.2) and returns the redirect URL; cash orders skip this call entirely."
+// §7.7/§9.3: creates the gateway session for a card order. With Paymob this returns the
+// clientSecret that the Flutter SDK needs.
 public class ChargePaymentCommandHandler
     : IRequestHandler<ChargePaymentCommand, ChargePaymentResponse>
 {
@@ -29,9 +29,6 @@ public class ChargePaymentCommandHandler
             throw new NotFoundException($"Order {request.OrderId} was not found.");
         }
 
-        // §7.8: 403 "not the resource owner" - not literally re-stated for this specific
-        // endpoint in §7.7, but applying the exact same ownership rule §7.4's other
-        // Customer-JWT + order-id endpoints (customer-received, review) already enforce.
         if (order.CustomerId != request.CustomerId)
         {
             throw new ForbiddenException("This order does not belong to the calling customer.");
@@ -39,11 +36,6 @@ public class ChargePaymentCommandHandler
 
         var payment = order.Payment;
 
-        // §9.1/§9.3: this call only makes sense for paymentMethod=card - "cash orders skip
-        // this call entirely." No documented status code is given for calling it on a cash
-        // order, so this is rejected as a business-rule violation (422), consistent with
-        // every other "wrong state for this action" case already established elsewhere
-        // (e.g. §6.3's stage-transition rules).
         if (payment is null || payment.Method != "card")
         {
             throw new UnprocessableEntityException(
@@ -52,20 +44,31 @@ public class ChargePaymentCommandHandler
                 "PAYMENT_METHOD_NOT_CARD");
         }
 
-        // §9.2/EXTERNAL CONFIGURATION BLOCKER: NotConfiguredPaymentProvider always throws
-        // here today - no Paymob/Fawry credentials exist in Documentation v1.2.
+        if (order.IsCancelled)
+        {
+            throw new UnprocessableEntityException(
+                "This order has been cancelled.", "ORDER_CANCELLED");
+        }
+
+        // Retry is allowed while pending or failed; a paid order can never be charged again.
+        if (payment.Status is "captured" or "refunded")
+        {
+            throw new UnprocessableEntityException(
+                "This order has already been paid.", "PAYMENT_ALREADY_CAPTURED");
+        }
+
+        // The amount always comes from the DB (payment.Amount), never from the client.
         var session = await _paymentProvider.CreateSessionAsync(order.Id, payment.Amount, "EGP");
 
-        // §9.3: "API creates a Payments row (Status=pending) and calls the gateway to create
-        // a hosted session" - Payment.Status was already set to "pending" at order-creation
-        // time (CreateOrderCommandHandler) and is NOT changed here; §9.1's "authorized" state
-        // is reached "at gateway redirect callback", a step with no documented RBurger
-        // endpoint of its own, so no additional transition is applied at this step.
+        payment.GatewayProvider = "paymob";
+        await _orderRepository.SaveChangesAsync(cancellationToken);
+
         return new ChargePaymentResponse
         {
             PaymentId = payment.Id,
             Status = payment.Status,
-            RedirectUrl = session.RedirectUrl
+            RedirectUrl = session.RedirectUrl,
+            ClientSecret = session.ClientSecret
         };
     }
 }

@@ -6,6 +6,7 @@ public class ChargePaymentResponse
     public Guid PaymentId { get; set; }
     public string Status { get; set; } = string.Empty;
     public string RedirectUrl { get; set; } = string.Empty;
+    public string ClientSecret { get; set; } = string.Empty;
 }
 
 // §7.7 POST /payments/webhook response: { received: true }.

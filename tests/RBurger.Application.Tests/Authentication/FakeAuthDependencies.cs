@@ -263,6 +263,7 @@ internal class FakeRefreshTokenRepository : IRefreshTokenRepository
 internal class FakePaymentProvider : IPaymentProvider
 {
     public bool AlwaysThrow { get; set; } = true;
+    public bool SignatureValid { get; set; } = true;
 
     // Day 13 addition - lets DeleteAdminOrderCommandHandlerTests exercise §9.4's "the external
     // refund fails" branch (a real gateway reporting Success=false) distinctly from the
@@ -280,7 +281,7 @@ internal class FakePaymentProvider : IPaymentProvider
         }
 
         ChargeCalls.Add((orderId, amount, currency));
-        return Task.FromResult(new PaymentSession("fake-session", "https://fake-gateway.test/pay"));
+        return Task.FromResult(new PaymentSession("fake-session", "https://fake-gateway.test/pay", "fake-client-secret"));
     }
 
     public Task<RefundResult> RefundAsync(Guid paymentId, decimal amount)
@@ -301,6 +302,6 @@ internal class FakePaymentProvider : IPaymentProvider
             throw new PaymentProviderNotConfiguredException();
         }
 
-        return true;
+        return SignatureValid;
     }
 }
